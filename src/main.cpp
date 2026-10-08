@@ -245,6 +245,12 @@ void loop()
   static char buf[16];         // sprintf text buffer
                                // Temporary variable
 
+  if (!client.connected())
+  {
+    reconnect();
+  }
+  client.loop();
+
   if (millis() - DHT.lastRead() >= 5000)
   {
     startMeasurement = millis();
