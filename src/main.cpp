@@ -102,6 +102,8 @@ void setup_wifi()
   Serial.println(ssid);
 
   WiFi.begin(ssid, password);
+  // ESP32-C3 SuperMini antenna is unstable at full TX power
+  WiFi.setTxPower(WIFI_POWER_8_5dBm);
 
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -179,6 +181,12 @@ void reconnect()
   // Loop until we're reconnected
   while (!client.connected())
   {
+    // MQTT needs a working WiFi link, otherwise the socket fails
+    if (WiFi.status() != WL_CONNECTED)
+    {
+      numberRetrys = 0;
+      setup_wifi();
+    }
     Serial.print("Attempting MQTT connection...");
     // Create a random client ID
     String clientId = "ESP32C3Client-";
